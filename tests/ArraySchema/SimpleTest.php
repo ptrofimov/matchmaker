@@ -8,23 +8,36 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(validate([], []));
     }
 
-    public function testSimpleSchema()
+    public function dataProviderValidation()
     {
-        $this->assertTrue(validate(
-            [
-                'key' => 100.0,
+        return [
+            'one key' => [
+                'schema' => [
+                    'key' => 100.0,
+                ],
+                'examples' => [
+                    [
+                        'array' => [
+                            'key' => 100.0,
+                        ],
+                        'isValid' => true,
+                    ],
+                    [
+                        'array' => [
+                            'key' => 200.0,
+                        ],
+                        'isValid' => false,
+                    ],
+                ],
             ],
-            [
-                'key' => 100.0,
-            ]
-        ));
-        $this->assertFalse(validate(
-            [
-                'key' => 200.0,
-            ],
-            [
-                'key' => 100.0,
-            ]
-        ));
+        ];
+    }
+
+    /** @dataProvider dataProviderValidation */
+    public function testSimpleSchema(array $schema, array $examples)
+    {
+        foreach ($examples as $example) {
+            $this->assertSame($example['isValid'], validate($example['array'], $schema));
+        }
     }
 }
