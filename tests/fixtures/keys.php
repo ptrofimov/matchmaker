@@ -1,21 +1,36 @@
 <?php
 
 return [
-    'one key' => [
+    'valid value' => [
         'schema' => [
-            'key' => 100.0,
+            'key1' => 100.0,
+            'key2' => 200.0,
         ],
         'array' => [
-            'key' => 100.0,
+            'key1' => 100.0,
+            'key2' => 200.0,
         ],
         'isValid' => true,
     ],
     'invalid value' => [
         'schema' => [
-            'key' => 100.0,
+            'key1' => 100.0,
+            'key2' => 200.0,
         ],
         'array' => [
-            'key' => 200.0,
+            'key1' => 100.0,
+            'key2' => 201.0,
+        ],
+        'isValid' => false,
+    ],
+    'other key' => [
+        'schema' => [
+            'key1' => 100.0,
+            'key2' => 200.0,
+        ],
+        'array' => [
+            'key1' => 100.0,
+            'key3' => 200.0,
         ],
         'isValid' => false,
     ],
@@ -25,7 +40,7 @@ return [
         ],
         'array' => [
             'key' => 100.0,
-            'otherkey' => 100.0,
+            'otherKey' => 100.0,
         ],
         'isValid' => false,
     ],
