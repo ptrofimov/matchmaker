@@ -11,33 +11,40 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
     public function dataProviderValidation()
     {
         return [
-            'one key' => [
+            'simple key' => [
                 'schema' => [
                     'key' => 100.0,
                 ],
-                'examples' => [
-                    [
-                        'array' => [
-                            'key' => 100.0,
-                        ],
-                        'isValid' => true,
-                    ],
-                    [
-                        'array' => [
-                            'key' => 200.0,
-                        ],
-                        'isValid' => false,
-                    ],
+                'array' => [
+                    'key' => 100.0,
                 ],
+                'isValid' => true,
+            ],
+            'invalid simple value' => [
+                'schema' => [
+                    'key' => 100.0,
+                ],
+                'array' => [
+                    'key' => 200.0,
+                ],
+                'isValid' => false,
+            ],
+            'too many keys' => [
+                'schema' => [
+                    'key' => 100.0,
+                ],
+                'array' => [
+                    'key' => 100.0,
+                    'otherkey' => 100.0,
+                ],
+                'isValid' => false,
             ],
         ];
     }
 
     /** @dataProvider dataProviderValidation */
-    public function testSimpleSchema(array $schema, array $examples)
+    public function testSimpleSchema(array $schema, array $array, $isValid)
     {
-        foreach ($examples as $example) {
-            $this->assertSame($example['isValid'], validate($example['array'], $schema));
-        }
+        $this->assertSame($isValid, validate($array, $schema));
     }
 }
