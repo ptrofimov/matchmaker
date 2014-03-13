@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'simple key' => [
+    'one key' => [
         'schema' => [
             'key' => 100.0,
         ],
@@ -10,7 +10,7 @@ return [
         ],
         'isValid' => true,
     ],
-    'invalid simple value' => [
+    'invalid value' => [
         'schema' => [
             'key' => 100.0,
         ],

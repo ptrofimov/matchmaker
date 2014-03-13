@@ -10,7 +10,17 @@ class SimpleTest extends \PHPUnit_Framework_TestCase
 
     public function dataProviderValidation()
     {
-        return require_once(dirname(__DIR__) . '/fixtures/keys.php');
+        $fixtures = [
+            'keys',
+        ];
+        $data = [];
+        foreach ($fixtures as $name) {
+            foreach (require_once(dirname(__DIR__) . "/fixtures/keys.php") as $key => $value) {
+                $data["$name: $key"] = $value;
+            }
+        }
+
+        return $data;
     }
 
     /** @dataProvider dataProviderValidation */
