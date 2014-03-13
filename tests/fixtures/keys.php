@@ -29,4 +29,12 @@ return [
         ],
         'isValid' => false,
     ],
+    'too few keys' => [
+        'schema' => [
+            'key' => 100.0,
+        ],
+        'array' => [
+        ],
+        'isValid' => false,
+    ],
 ];
