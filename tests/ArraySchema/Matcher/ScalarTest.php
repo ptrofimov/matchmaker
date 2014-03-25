@@ -16,6 +16,9 @@ class ScalarTest extends \PHPUnit_Framework_TestCase
             'lte5' => function ($value) {
                     return $value <= 5;
                 },
+            'gte10' => function ($value) {
+                    return $value >= 10;
+                },
             'notCallable' => 'value',
         ];
         $this->typeChar = '.';
@@ -76,7 +79,12 @@ class ScalarTest extends \PHPUnit_Framework_TestCase
 
     public function testMultiTypes()
     {
-        $this->assertTrue($this->me->matches('.numeric.lte5', 4));
-        $this->assertFalse($this->me->matches('.numeric.lte5', 6));
+        $this->assertTrue($this->me->matches($this->expected('.numeric.lte5'), 4));
+        $this->assertFalse($this->me->matches($this->expected('.numeric.lte5'), 6));
+    }
+
+    private function expected($string)
+    {
+        return str_replace('.', $this->typeChar, $string);
     }
 }
