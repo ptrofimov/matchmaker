@@ -73,4 +73,10 @@ class ScalarTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->me->matches('\\' . $this->typeChar . 'notType', $this->typeChar . 'notType'));
         $this->assertFalse($this->me->matches('\\' . $this->typeChar . 'notType', 'notType'));
     }
+
+    public function testMultiTypes()
+    {
+        $this->assertTrue($this->me->matches('.numeric.lte5', 4));
+        $this->assertFalse($this->me->matches('.numeric.lte5', 6));
+    }
 }
