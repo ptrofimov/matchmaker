@@ -7,7 +7,7 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(array_keys_valid([], []));
     }
 
-    public function testSimple()
+    public function testConstantMatcher()
     {
         $this->assertTrue(
             array_keys_valid(
@@ -27,5 +27,46 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
                 ['key2', 'key1', 'key3']
             )
         );
+    }
+
+    public function testCallableMatcher()
+    {
+        $this->assertTrue(
+            array_keys_valid(
+                ['string' => 1, 2 => 2],
+                [':is_string', ':is_int']
+            )
+        );
+    }
+
+    public function testOptionalQuantifier()
+    {
+        $this->true(['key' => 1], ['key?']);
+        $this->true([], ['key?']);
+        $this->true([], [':is_int?']);
+        $this->true([1], [':is_int?']);
+        $this->false([1, 2], [':is_int?']);
+    }
+
+    public function testMultiQuantifier()
+    {
+        $this->true(['key' => 1], ['key*']);
+        $this->true([], ['key*']);
+        $this->true([], [':is_int*']);
+        $this->true([1], [':is_int*']);
+        $this->true([1, 2], [':is_int*']);
+        $this->true([1, 2, 3], [':is_int']);
+//        $this->true([1, 2, 3], ['']);
+        $this->true([1, 2, 3], ['*']);
+    }
+
+    private function true(array $array, array $schema)
+    {
+        $this->assertTrue(array_keys_valid($array, $schema));
+    }
+
+    private function false(array $array, array $schema)
+    {
+        $this->assertFalse(array_keys_valid($array, $schema));
     }
 }
