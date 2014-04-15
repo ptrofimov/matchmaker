@@ -6,6 +6,8 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
     foreach ($schema as $key) {
         if (substr($key, -1) == '?') {
             $expectedCounters[substr($key, 0, -1)] = [0, 1];
+        } elseif (substr($key, -1) == '!') {
+            $expectedCounters[substr($key, 0, -1)] = [1, 1];
         } elseif (substr($key, -1) == '*') {
             $expectedCounters[substr($key, 0, -1)] = [0, PHP_INT_MAX];
         } elseif (substr($key, 0, 1) == ':') {

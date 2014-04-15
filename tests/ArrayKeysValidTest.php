@@ -60,6 +60,13 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->true([1, 2, 3], ['*']);
     }
 
+    public function testSingleQuantifier()
+    {
+        $this->true(['key' => 1], ['key!']);
+        $this->true([1 => true], [':is_int!']);
+        $this->false([1 => true, 2 => true], [':is_int!']);
+    }
+
     private function true(array $array, array $schema)
     {
         $this->assertTrue(array_keys_valid($array, $schema));
