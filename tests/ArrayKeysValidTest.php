@@ -67,6 +67,21 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false([1 => true, 2 => true], [':is_int!']);
     }
 
+    public function testRangeQuantifier()
+    {
+        $this->true([1 => true], [':is_int{1}']);
+        $this->false([1 => true, 2 => true], [':is_int{1}']);
+
+        $this->true([1 => true, 2 => true], [':is_int{1,2}']);
+        $this->false([1 => true, 2 => true, 3 => true], [':is_int{1,2}']);
+
+        $this->true([1 => true, 2 => true], [':is_int{2,}']);
+        $this->false([1 => true], [':is_int{2,}']);
+
+        $this->true([1 => true, 2 => true], [':is_int{,2}']);
+        $this->false([1 => true, 2 => true, 3 => true], [':is_int{,2}']);
+    }
+
     private function true(array $array, array $schema)
     {
         $this->assertTrue(array_keys_valid($array, $schema));

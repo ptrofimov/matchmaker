@@ -8,6 +8,19 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
             $expectedCounters[substr($key, 0, -1)] = [0, 1];
         } elseif (substr($key, -1) == '!') {
             $expectedCounters[substr($key, 0, -1)] = [1, 1];
+        } elseif (substr($key, -1) == '}') {
+            list($key, $quantifier) = explode('{', $key);
+            $quantifier = rtrim($quantifier, '}');
+            $range = explode(',', $quantifier);
+            if (count($range) == 1) {
+                $expectedCounters[$key] = [intval($range), intval($range)];
+            } else {
+                list($min, $max) = $range;
+                $expectedCounters[$key] = [
+                    $min === '' ? 0 : intval($min),
+                    $max === '' ? PHP_INT_MAX : intval($max)
+                ];
+            }
         } elseif (substr($key, -1) == '*') {
             $expectedCounters[substr($key, 0, -1)] = [0, PHP_INT_MAX];
         } elseif (substr($key, 0, 1) == ':') {
