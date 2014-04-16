@@ -82,6 +82,24 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false([1 => true, 2 => true, 3 => true], [':is_int{,2}']);
     }
 
+    public function testCallableFromDictionary()
+    {
+        $this->true([1 => true], [':int!']);
+        $this->false(['key' => true], [':int!']);
+    }
+
+    public function testConstantFromDictionary()
+    {
+        $this->true(['hello' => true], [':hello!']);
+        $this->false([1 => true], [':hello!']);
+    }
+
+    public function testInvalidMatcher()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        $this->false(['hello' => true], [':invalid_matcher!']);
+    }
+
     private function true(array $array, array $schema)
     {
         $this->assertTrue(array_keys_valid($array, $schema));

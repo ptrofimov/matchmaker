@@ -1,5 +1,26 @@
 <?php
 
+function dictionary()
+{
+    return [
+        'int' => 'is_int',
+        'hello' => 'hello',
+    ];
+}
+
+function check_matcher($matcher, $value)
+{
+    $matchers = dictionary();
+    if (!isset($matchers[$matcher])) {
+        throw new InvalidArgumentException("Matcher $matcher not found");
+    }
+    if (is_callable($matchers[$matcher])) {
+        return (bool) $matchers[$matcher]($value);
+    }
+
+    return $matchers[$matcher] === $value;
+}
+
 function array_keys_valid(array $array, array $schema, &$errors = null)
 {
     $expectedCounters = [];
@@ -36,7 +57,12 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
         } else foreach ($counters as $keyPattern => $counter) {
             if (substr($keyPattern, 0, 1) == ':') {
                 $pattern = substr($keyPattern, 1);
-                if (is_callable($pattern) && $pattern($key)) {
+                if (is_callable($pattern)) {
+                    if ($pattern($key)) {
+                        $counters[$keyPattern]++;
+                        break;
+                    }
+                } elseif (check_matcher($pattern, $key)) {
                     $counters[$keyPattern]++;
                     break;
                 }
