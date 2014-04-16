@@ -8,9 +8,9 @@ function dictionary()
     ];
 }
 
-function check_matcher($matcher, $value)
+function check_matcher($matcher, $value, $dictionary = null)
 {
-    $matchers = dictionary();
+    $matchers = $dictionary ? $dictionary : dictionary();
     if (!isset($matchers[$matcher])) {
         throw new InvalidArgumentException("Matcher $matcher not found");
     }
@@ -23,9 +23,12 @@ function check_matcher($matcher, $value)
 
 function array_keys_valid(array $array, array $schema, &$errors = null)
 {
+    $dictionary = dictionary();
     $expectedCounters = [];
-    foreach ($schema as $key) {
-        if (substr($key, -1) == '?') {
+    foreach ($schema as $index => $key) {
+        if ($index === ':') {
+            $dictionary = array_merge($dictionary, $key);
+        } elseif (substr($key, -1) == '?') {
             $expectedCounters[substr($key, 0, -1)] = [0, 1];
         } elseif (substr($key, -1) == '!') {
             $expectedCounters[substr($key, 0, -1)] = [1, 1];
@@ -62,7 +65,7 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
                         $counters[$keyPattern]++;
                         break;
                     }
-                } elseif (check_matcher($pattern, $key)) {
+                } elseif (check_matcher($pattern, $key, $dictionary)) {
                     $counters[$keyPattern]++;
                     break;
                 }

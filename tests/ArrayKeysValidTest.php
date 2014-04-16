@@ -100,6 +100,12 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false(['hello' => true], [':invalid_matcher!']);
     }
 
+    public function testInlineMatcher()
+    {
+        $this->true([5 => true], [':numberFive!', ':' => ['numberFive' => 5]]);
+        $this->false([4 => true], [':numberFive!', ':' => ['numberFive' => 5]]);
+    }
+
     private function true(array $array, array $schema)
     {
         $this->assertTrue(array_keys_valid($array, $schema));
