@@ -28,29 +28,37 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
     foreach ($schema as $index => $key) {
         if ($index === ':') {
             $dictionary = array_merge($dictionary, $key);
-        } elseif (substr($key, -1) == '?') {
-            $expectedCounters[substr($key, 0, -1)] = [0, 1];
+            continue;
+        }
+        $nested = null;
+        if (is_array($key)) {
+            $nested = $key;
+            $key = $index;
+        }
+        if (substr($key, -1) == '?') {
+            $expectedCounters[substr($key, 0, -1)] = [0, 1, $nested];
         } elseif (substr($key, -1) == '!') {
-            $expectedCounters[substr($key, 0, -1)] = [1, 1];
+            $expectedCounters[substr($key, 0, -1)] = [1, 1, $nested];
         } elseif (substr($key, -1) == '}') {
             list($key, $quantifier) = explode('{', $key);
             $quantifier = rtrim($quantifier, '}');
             $range = explode(',', $quantifier);
             if (count($range) == 1) {
-                $expectedCounters[$key] = [intval($range), intval($range)];
+                $expectedCounters[$key] = [intval($range), intval($range), $nested];
             } else {
                 list($min, $max) = $range;
                 $expectedCounters[$key] = [
                     $min === '' ? 0 : intval($min),
-                    $max === '' ? PHP_INT_MAX : intval($max)
+                    $max === '' ? PHP_INT_MAX : intval($max),
+                    $nested
                 ];
             }
         } elseif (substr($key, -1) == '*') {
-            $expectedCounters[substr($key, 0, -1)] = [0, PHP_INT_MAX];
+            $expectedCounters[substr($key, 0, -1)] = [0, PHP_INT_MAX, $nested];
         } elseif (substr($key, 0, 1) == ':') {
-            $expectedCounters[$key] = [0, PHP_INT_MAX];
+            $expectedCounters[$key] = [0, PHP_INT_MAX, $nested];
         } else {
-            $expectedCounters[$key] = [1, 1];
+            $expectedCounters[$key] = [1, 1, $nested];
         }
     }
     $counters = array_fill_keys(array_keys($expectedCounters), 0);
@@ -62,15 +70,36 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
                 $pattern = substr($keyPattern, 1);
                 if (is_callable($pattern)) {
                     if ($pattern($key)) {
-                        $counters[$keyPattern]++;
+                        if ($expectedCounters[$keyPattern][2]) {
+                            if(is_array($value)
+                            && array_keys_valid($value, $expectedCounters[$keyPattern][2])){
+                                $counters[$keyPattern]++;
+                            }
+                        }else{
+                            $counters[$keyPattern]++;
+                        }
                         break;
                     }
                 } elseif (check_matcher($pattern, $key, $dictionary)) {
-                    $counters[$keyPattern]++;
+                    if ($expectedCounters[$keyPattern][2]) {
+                        if(is_array($value)
+                            && array_keys_valid($value, $expectedCounters[$keyPattern][2])){
+                            $counters[$keyPattern]++;
+                        }
+                    }else{
+                        $counters[$keyPattern]++;
+                    }
                     break;
                 }
             } elseif ($keyPattern == '') {
-                $counters[$keyPattern]++;
+                if ($expectedCounters[$keyPattern][2]) {
+                    if(is_array($value)
+                        && array_keys_valid($value, $expectedCounters[$keyPattern][2])){
+                        $counters[$keyPattern]++;
+                    }
+                }else{
+                    $counters[$keyPattern]++;
+                }
                 break;
             }
         }

@@ -106,6 +106,13 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false([4 => true], [':numberFive!', ':' => ['numberFive' => 5]]);
     }
 
+    public function testNestedKeys()
+    {
+        $this->true([5 => ['key' => 1]], ['*' => ['key']]);
+        $this->false([5 => ['test' => 1]], ['!' => ['key']]);
+        $this->false([5 => 1], ['!' => ['key']]);
+    }
+
     private function true(array $array, array $schema)
     {
         $this->assertTrue(array_keys_valid($array, $schema));
