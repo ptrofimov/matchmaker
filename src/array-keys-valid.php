@@ -5,17 +5,30 @@ function dictionary()
     return [
         'int' => 'is_int',
         'hello' => 'hello',
+        'gt' => function ($value, $n) {
+                return $value > $n;
+            },
+        'in' => function ($value) {
+                $args = func_get_args();
+                array_shift($args);
+                return in_array($value, $args, true);
+            },
     ];
 }
 
 function check_matcher($matcher, $value, $dictionary = null)
 {
+    $args = [];
     $matchers = $dictionary ? $dictionary : dictionary();
+    if (substr($matcher, -1) == ')') { // matcher with arguments
+        list($matcher, $args) = explode('(', $matcher);
+        $args = explode(',', rtrim($args, ')'));
+    }
     if (!isset($matchers[$matcher])) {
         throw new InvalidArgumentException("Matcher $matcher not found");
     }
     if (is_callable($matchers[$matcher])) {
-        return (bool) $matchers[$matcher]($value);
+        return (bool) call_user_func_array($matchers[$matcher], array_merge([$value], $args));
     }
 
     return $matchers[$matcher] === $value;

@@ -113,6 +113,12 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false([5 => 1], ['!' => ['key']]);
     }
 
+    public function testMatcherWithArguments()
+    {
+        $this->true([6 => null], [':gt(5)!']);
+        $this->false([5 => null], [':gt(5)!']);
+    }
+
     private function true(array $array, array $schema)
     {
         $this->assertTrue(array_keys_valid($array, $schema));
