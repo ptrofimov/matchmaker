@@ -21,13 +21,11 @@ function check_matcher($matcher, $value, $dictionary = null)
     return $matchers[$matcher] === $value;
 }
 
-function array_keys_valid(array $array, array $schema, &$errors = null)
+function get_expected_counters(array $schema)
 {
-    $dictionary = dictionary();
     $expectedCounters = [];
     foreach ($schema as $index => $key) {
         if ($index === ':') {
-            $dictionary = array_merge($dictionary, $key);
             continue;
         }
         $nested = null;
@@ -61,6 +59,30 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
             $expectedCounters[$key] = [1, 1, $nested];
         }
     }
+
+    return $expectedCounters;
+}
+
+function increment_counter(array $expectedCounters, array &$counters, $keyPattern, $value)
+{
+    if ($expectedCounters[$keyPattern][2]) {
+        if (is_array($value)
+            && array_keys_valid($value, $expectedCounters[$keyPattern][2])
+        ) {
+            $counters[$keyPattern]++;
+        }
+    } else {
+        $counters[$keyPattern]++;
+    }
+}
+
+function array_keys_valid(array $array, array $schema, &$errors = null)
+{
+    $dictionary = dictionary();
+    if (isset($schema[':'])) {
+        $dictionary = array_merge($dictionary, $schema[':']);
+    }
+    $expectedCounters = get_expected_counters($schema);
     $counters = array_fill_keys(array_keys($expectedCounters), 0);
     foreach ($array as $key => $value) {
         if (isset($counters[$key])) {
@@ -70,36 +92,15 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
                 $pattern = substr($keyPattern, 1);
                 if (is_callable($pattern)) {
                     if ($pattern($key)) {
-                        if ($expectedCounters[$keyPattern][2]) {
-                            if(is_array($value)
-                            && array_keys_valid($value, $expectedCounters[$keyPattern][2])){
-                                $counters[$keyPattern]++;
-                            }
-                        }else{
-                            $counters[$keyPattern]++;
-                        }
+                        increment_counter($expectedCounters, $counters, $keyPattern, $value);
                         break;
                     }
                 } elseif (check_matcher($pattern, $key, $dictionary)) {
-                    if ($expectedCounters[$keyPattern][2]) {
-                        if(is_array($value)
-                            && array_keys_valid($value, $expectedCounters[$keyPattern][2])){
-                            $counters[$keyPattern]++;
-                        }
-                    }else{
-                        $counters[$keyPattern]++;
-                    }
+                    increment_counter($expectedCounters, $counters, $keyPattern, $value);
                     break;
                 }
             } elseif ($keyPattern == '') {
-                if ($expectedCounters[$keyPattern][2]) {
-                    if(is_array($value)
-                        && array_keys_valid($value, $expectedCounters[$keyPattern][2])){
-                        $counters[$keyPattern]++;
-                    }
-                }else{
-                    $counters[$keyPattern]++;
-                }
+                increment_counter($expectedCounters, $counters, $keyPattern, $value);
                 break;
             }
         }

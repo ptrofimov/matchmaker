@@ -1,14 +1,17 @@
 <?php
 
-namespace php_array\sdf {
-    function test()
-    {
-        return 5;
-    }
+function func()
+{
+//    arr(func_get_args())
+//        ->validateKeys(['*' => ['id', 'title', 'status']])
+//        ->orThrowException();
+//
+//    array_keys_valid_assert();
+
+    $a=1;
+    is_int($a) ?: throw new Exception('sdf');
+
+    // todo
 }
 
-namespace{
-    use my\super\ns;
-
-    echo ns\test();
-}
+func();
