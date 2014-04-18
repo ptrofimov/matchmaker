@@ -37,39 +37,35 @@ function check_matcher($matcher, $value, $dictionary = null)
 function get_expected_counters(array $schema)
 {
     $expectedCounters = [];
-    foreach ($schema as $index => $key) {
-        if ($index === ':') {
-            continue;
-        }
+    foreach ($schema as $key => $item) {
         $nested = null;
-        if (is_array($key)) {
-            $nested = $key;
-            $key = $index;
+        if (is_array($item)) {
+            $nested = $item;
+            $item = $key;
         }
-        if (substr($key, -1) == '?') {
-            $expectedCounters[substr($key, 0, -1)] = [0, 1, $nested];
-        } elseif (substr($key, -1) == '!') {
-            $expectedCounters[substr($key, 0, -1)] = [1, 1, $nested];
-        } elseif (substr($key, -1) == '}') {
-            list($key, $quantifier) = explode('{', $key);
-            $quantifier = rtrim($quantifier, '}');
-            $range = explode(',', $quantifier);
+        if (substr($item, -1) == '?') {
+            $expectedCounters[substr($item, 0, -1)] = [0, 1, $nested];
+        } elseif (substr($item, -1) == '!') {
+            $expectedCounters[substr($item, 0, -1)] = [1, 1, $nested];
+        } elseif (substr($item, -1) == '}') {
+            list($item, $quantifier) = explode('{', $item);
+            $range = explode(',', rtrim($quantifier, '}'));
             if (count($range) == 1) {
-                $expectedCounters[$key] = [intval($range), intval($range), $nested];
+                $expectedCounters[$item] = [intval($range), intval($range), $nested];
             } else {
                 list($min, $max) = $range;
-                $expectedCounters[$key] = [
+                $expectedCounters[$item] = [
                     $min === '' ? 0 : intval($min),
                     $max === '' ? PHP_INT_MAX : intval($max),
                     $nested
                 ];
             }
-        } elseif (substr($key, -1) == '*') {
-            $expectedCounters[substr($key, 0, -1)] = [0, PHP_INT_MAX, $nested];
-        } elseif (substr($key, 0, 1) == ':') {
-            $expectedCounters[$key] = [0, PHP_INT_MAX, $nested];
+        } elseif (substr($item, -1) == '*') {
+            $expectedCounters[substr($item, 0, -1)] = [0, PHP_INT_MAX, $nested];
+        } elseif (substr($item, 0, 1) == ':') {
+            $expectedCounters[$item] = [0, PHP_INT_MAX, $nested];
         } else {
-            $expectedCounters[$key] = [1, 1, $nested];
+            $expectedCounters[$item] = [1, 1, $nested];
         }
     }
 
@@ -94,6 +90,7 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
     $dictionary = dictionary();
     if (isset($schema[':'])) {
         $dictionary = array_merge($dictionary, $schema[':']);
+        unset($schema[':']);
     }
     $expectedCounters = get_expected_counters($schema);
     $counters = array_fill_keys(array_keys($expectedCounters), 0);
@@ -118,7 +115,6 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
             }
         }
     }
-    $errors = [$expectedCounters, $counters];
     foreach ($counters as $key => $counter) {
         if ($counter < $expectedCounters[$key][0] || $counter > $expectedCounters[$key][1]) {
             return false;
