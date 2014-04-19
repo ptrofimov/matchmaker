@@ -11,27 +11,35 @@ function dictionary()
         'in' => function ($value) {
                 $args = func_get_args();
                 array_shift($args);
-                return in_array($value, $args, true);
+                return in_array($value, $args);
             },
     ];
 }
 
-function check_matcher($matcher, $value, $dictionary = null)
+function check_matcher($matcherString, $value, $dictionary = null)
 {
     $args = [];
     $matchers = $dictionary ? $dictionary : dictionary();
-    if (substr($matcher, -1) == ')') { // matcher with arguments
-        list($matcher, $args) = explode('(', $matcher);
-        $args = explode(',', rtrim($args, ')'));
-    }
-    if (!isset($matchers[$matcher])) {
-        throw new InvalidArgumentException("Matcher $matcher not found");
-    }
-    if (is_callable($matchers[$matcher])) {
-        return (bool) call_user_func_array($matchers[$matcher], array_merge([$value], $args));
+    foreach (explode(' ', $matcherString) as $matcher) {
+        if (substr($matcher, -1) == ')') { // matcher with arguments
+            list($matcher, $args) = explode('(', $matcher);
+            $args = explode(',', rtrim($args, ')'));
+        }
+        if (!isset($matchers[$matcher])) {
+            throw new InvalidArgumentException("Matcher $matcher not found");
+        }
+        if (is_callable($matchers[$matcher])) {
+            if (!call_user_func_array($matchers[$matcher], array_merge([$value], $args))) {
+                return false;
+            }
+        } else {
+            if ($matchers[$matcher] !== $value) {
+                return false;
+            }
+        }
     }
 
-    return $matchers[$matcher] === $value;
+    return true;
 }
 
 function get_expected_counters(array $schema)
