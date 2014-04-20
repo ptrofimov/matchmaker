@@ -125,6 +125,18 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false([8 => null], [':gt(5) in(5,6,7)!']);
     }
 
+    public function testErrors()
+    {
+        array_keys_valid(['key1' => null], ['key'], $errors);
+
+        $this->assertEquals(
+            [
+                'key' => ['Key is required'],
+            ],
+            $errors
+        );
+    }
+
     private function true(array $array, array $schema)
     {
         $this->assertTrue(array_keys_valid($array, $schema));

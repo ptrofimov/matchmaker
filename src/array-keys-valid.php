@@ -123,11 +123,14 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
             }
         }
     }
+    $result = true;
+    $errors = [];
     foreach ($counters as $key => $counter) {
         if ($counter < $expectedCounters[$key][0] || $counter > $expectedCounters[$key][1]) {
-            return false;
+            $result = false;
+            $errors[$key][] = 'Key is required';
         }
     }
 
-    return true;
+    return $result;
 }
