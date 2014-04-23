@@ -17,26 +17,22 @@ function dictionary()
     ];
 }
 
-function check_matcher($matcherString, $value, $dictionary = null)
+function check_matcher($matcherString, $value, $matchers)
 {
     $args = [];
-    $matchers = $dictionary ? $dictionary : dictionary();
-    foreach (explode(' ', $matcherString) as $matcher) {
-        if (substr($matcher, -1) == ')') { // matcher with arguments
-            list($matcher, $args) = explode('(', $matcher);
+    foreach (explode(' ', $matcherString) as $name) {
+        if (substr($name, -1) == ')') {
+            list($name, $args) = explode('(', $name);
             $args = explode(',', rtrim($args, ')'));
         }
-        if (!isset($matchers[$matcher])) {
-            throw new \InvalidArgumentException("Matcher $matcher not found");
-        }
-        if (is_callable($matchers[$matcher])) {
-            if (!call_user_func_array($matchers[$matcher], array_merge([$value], $args))) {
+        if (!isset($matchers[$name])) {
+            throw new \InvalidArgumentException("Matcher $name not found");
+        } elseif (is_callable($matchers[$name])) {
+            if (!call_user_func_array($matchers[$name], array_merge([$value], $args))) {
                 return false;
             }
-        } else {
-            if ($matchers[$matcher] !== $value) {
-                return false;
-            }
+        } else if ($matchers[$name] !== $value) {
+            return false;
         }
     }
 
