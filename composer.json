@@ -7,7 +7,7 @@
     },
     "autoload": {
         "files": [
-            "./src/array-keys-valid.php"
+            "./src/functions.php"
         ]
     }
 }

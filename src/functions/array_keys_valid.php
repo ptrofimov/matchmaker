@@ -1,4 +1,5 @@
 <?php
+namespace functions;
 
 function dictionary()
 {
@@ -26,7 +27,7 @@ function check_matcher($matcherString, $value, $dictionary = null)
             $args = explode(',', rtrim($args, ')'));
         }
         if (!isset($matchers[$matcher])) {
-            throw new InvalidArgumentException("Matcher $matcher not found");
+            throw new \InvalidArgumentException("Matcher $matcher not found");
         }
         if (is_callable($matchers[$matcher])) {
             if (!call_user_func_array($matchers[$matcher], array_merge([$value], $args))) {
@@ -93,7 +94,7 @@ function increment_counter(array $expectedCounters, array &$counters, $keyPatter
     }
 }
 
-function array_keys_valid(array $array, array $schema, &$errors = null)
+function array_keys_valid(array $array, array $schema)
 {
     $dictionary = dictionary();
     if (isset($schema[':'])) {
@@ -123,14 +124,11 @@ function array_keys_valid(array $array, array $schema, &$errors = null)
             }
         }
     }
-    $result = true;
-    $errors = [];
     foreach ($counters as $key => $counter) {
         if ($counter < $expectedCounters[$key][0] || $counter > $expectedCounters[$key][1]) {
-            $result = false;
-            $errors[$key][] = 'Key is required';
+            return false;
         }
     }
 
-    return $result;
+    return true;
 }
