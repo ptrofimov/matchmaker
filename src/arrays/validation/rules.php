@@ -33,11 +33,11 @@ namespace arrays\validation {
                         return in_array($value, array_slice(func_get_args(), 1));
                     },
                 'mixed' =>
-                    function ($value) {
+                    function () {
                         return true;
                     },
                 'any' =>
-                    function ($value) {
+                    function () {
                         return true;
                     },
 
@@ -189,11 +189,17 @@ namespace arrays\validation {
                     },
                 'property' =>
                     function ($value, $property, $expected) {
-                        return is_object($value) && $value->$property == $expected;
+                        return
+                            is_object($value)
+                            && (property_exists($value, $property) || property_exists($value, '__get'))
+                            && $value->$property == $expected;
                     },
                 'method' =>
                     function ($value, $method, $expected) {
-                        return is_object($value) && $value->$method() == $expected;
+                        return
+                            is_object($value)
+                            && (method_exists($value, $method) || method_exists($value, '__call'))
+                            && $value->$method() == $expected;
                     },
             ];
         }
