@@ -5,9 +5,9 @@ namespace arrays\keys {
 
     function valid(array $array, array $schema)
     {
-        $dictionary = v\matchers();
+        $rules = v\rules();
         if (isset($schema[':'])) {
-            $dictionary = array_merge($dictionary, $schema[':']);
+            $rules = array_merge($rules, $schema[':']);
             unset($schema[':']);
         }
         $expectedCounters = v\get_expected_counters($schema);
@@ -23,7 +23,7 @@ namespace arrays\keys {
                             v\increment_counter($expectedCounters, $counters, $keyPattern, $value);
                             break;
                         }
-                    } elseif (v\check_matcher($pattern, $key, $dictionary)) {
+                    } elseif (v\check_matcher($pattern, $key, $rules)) {
                         v\increment_counter($expectedCounters, $counters, $keyPattern, $value);
                         break;
                     }

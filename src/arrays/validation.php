@@ -1,7 +1,7 @@
 <?php
 namespace arrays\validation {
 
-    function check_matcher($matcherString, $value, $matchers)
+    function check_matcher($matcherString, $value, $rules)
     {
         $args = [];
         foreach (explode(' ', $matcherString) as $name) {
@@ -9,13 +9,13 @@ namespace arrays\validation {
                 list($name, $args) = explode('(', $name);
                 $args = explode(',', rtrim($args, ')'));
             }
-            if (!isset($matchers[$name])) {
-                throw new \InvalidArgumentException("Matcher $name not found");
-            } elseif (is_callable($matchers[$name])) {
-                if (!call_user_func_array($matchers[$name], array_merge([$value], $args))) {
+            if (!isset($rules[$name])) {
+                throw new \InvalidArgumentException("Validation rule $name not found");
+            } elseif (is_callable($rules[$name])) {
+                if (!call_user_func_array($rules[$name], array_merge([$value], $args))) {
                     return false;
                 }
-            } else if ($matchers[$name] !== $value) {
+            } else if ($rules[$name] !== $value) {
                 return false;
             }
         }
