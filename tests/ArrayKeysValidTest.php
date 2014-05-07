@@ -68,12 +68,6 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false(['key' => true], [':int!']);
     }
 
-    public function testConstantFromDictionary()
-    {
-        $this->true(['hello' => true], [':hello!']);
-        $this->false([1 => true], [':hello!']);
-    }
-
     public function testInvalidMatcher()
     {
         $this->setExpectedException('InvalidArgumentException');
