@@ -1,22 +1,6 @@
 <?php
 namespace arrays\validation {
 
-    function matchers()
-    {
-        return [
-            'int' => 'is_int',
-            'hello' => 'hello',
-            'gt' => function ($value, $n) {
-                    return $value > $n;
-                },
-            'in' => function ($value) {
-                    $args = func_get_args();
-                    array_shift($args);
-                    return in_array($value, $args);
-                },
-        ];
-    }
-
     function check_matcher($matcherString, $value, $matchers)
     {
         $args = [];
