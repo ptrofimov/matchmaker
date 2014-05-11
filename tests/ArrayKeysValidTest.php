@@ -4,39 +4,19 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
 {
     public function testEmptySchema()
     {
-        $this->assertTrue(array_keys_valid([], []));
+        $this->true([], []);
     }
 
     public function testConstantMatcher()
     {
-        $this->assertTrue(
-            array_keys_valid(
-                ['key1' => 1, 'key2' => 2, 'key3' => 3],
-                ['key1', 'key2', 'key3']
-            )
-        );
-        $this->assertTrue(
-            array_keys_valid(
-                ['key1' => 1, 'key2' => 2, 'key3' => 3],
-                ['key2', 'key1', 'key3']
-            )
-        );
-        $this->assertFalse(
-            array_keys_valid(
-                ['key1' => 1, 'key2' => 2],
-                ['key2', 'key1', 'key3']
-            )
-        );
+        $this->true(['key1' => 1, 'key2' => 2, 'key3' => 3], ['key1', 'key2', 'key3']);
+        $this->true(['key1' => 1, 'key2' => 2, 'key3' => 3], ['key2', 'key1', 'key3']);
+        $this->false(['key1' => 1, 'key2' => 2], ['key2', 'key1', 'key3']);
     }
 
     public function testCallableMatcher()
     {
-        $this->assertTrue(
-            array_keys_valid(
-                ['string' => 1, 2 => 2],
-                [':is_string', ':is_int']
-            )
-        );
+        $this->true(['string' => 1, 2 => 2], [':is_string', ':is_int']);
     }
 
     public function testOptionalQuantifier()
@@ -88,12 +68,6 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
         $this->false(['key' => true], [':int!']);
     }
 
-    public function testConstantFromDictionary()
-    {
-        $this->true(['hello' => true], [':hello!']);
-        $this->false([1 => true], [':hello!']);
-    }
-
     public function testInvalidMatcher()
     {
         $this->setExpectedException('InvalidArgumentException');
@@ -123,18 +97,6 @@ class ArrayKeysValidTest extends \PHPUnit_Framework_TestCase
     {
         $this->true([6 => null], [':gt(5) in(5,6,7)!']);
         $this->false([8 => null], [':gt(5) in(5,6,7)!']);
-    }
-
-    public function testErrors()
-    {
-        array_keys_valid(['key1' => null], ['key'], $errors);
-
-        $this->assertEquals(
-            [
-                'key' => ['Key is required'],
-            ],
-            $errors
-        );
     }
 
     private function true(array $array, array $schema)

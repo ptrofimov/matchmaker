@@ -6,13 +6,8 @@
         "phpunit/phpunit": "3.7.*"
     },
     "autoload": {
-        "psr-0": {
-            "ArraySchema": "src"
-        },
         "files": [
-            "./src/ArraySchema/validate.php",
-            "./src/array-valid.php",
-            "./src/array-keys-valid.php"
+            "./src/functions.php"
         ]
     }
 }
