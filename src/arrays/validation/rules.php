@@ -55,6 +55,7 @@ namespace arrays\validation {
                 'integer' => 'is_integer',
                 'long' => 'is_long',
                 'numeric' => 'is_numeric',
+                'number' => 'is_numeric',
                 'object' => 'is_object',
                 'real' => 'is_real',
                 'resource' => 'is_resource',
