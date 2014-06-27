@@ -8,7 +8,7 @@
         backupGlobals="false"
         colors="true">
     <testsuites>
-        <testsuite name="Array">
+        <testsuite name="matchmaker">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>
