@@ -24,7 +24,7 @@ function key_matcher(array $pattern)
             list($k, $range) = explode('{', $k);
             $range = explode(',', rtrim($range, '}'));
             $keys[$k] = count($range) == 1
-                ? [$range, $range]
+                ? [$range[0], $range[0]]
                 : [$range[0] === '' ? 0 : $range[0], $range[1] === '' ? PHP_INT_MAX : $range[1]];
         } else {
             $keys[$k] = $chars[$k[0] == ':' ? '*' : '!'];
