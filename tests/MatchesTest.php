@@ -51,4 +51,40 @@ class MatchesTest extends \PHPUnit_Framework_TestCase
             )
         );
     }
+
+    public function testExample()
+    {
+        $books = [
+            [
+                'type' => 'book',
+                'title' => 'Geography book',
+                'chapters' => [
+                    'eu' => ['title' => 'Europe', 'interesting' => true],
+                    'as' => ['title' => 'America', 'interesting' => false]
+                ]
+            ],
+            [
+                'type' => 'book',
+                'title' => 'Foreign languages book',
+                'chapters' => [
+                    'de' => ['title' => 'Deutsch']
+                ]
+            ]
+        ];
+
+        $pattern = [
+            '*' => [
+                'type' => 'book',
+                'title' => ':string contains(book)',
+                'chapters' => [
+                    ':string length(2) {1,3}' => [
+                        'title' => ':string',
+                        'interesting?' => ':bool',
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertTrue(matches($books, $pattern));
+    }
 }
