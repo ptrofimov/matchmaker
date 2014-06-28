@@ -1,4 +1,20 @@
 {
+    "name": "ptrofimov/matchmaker",
+    "description": "Ultra-fresh PHP matching functions",
+    "keywords": ["matchmaker", "matcher", "validation", "array", "json", "schema", "pattern"],
+    "license": "MIT",
+    "homepage": "https://github.com/ptrofimov/matchmaker",
+    "authors": [
+        {
+            "name": "Petr Trofimov",
+            "email": "petrofimov@yandex.ru"
+        }
+    ],
+    "support": {
+        "email": "petrofimov@yandex.ru",
+        "source": "https://github.com/ptrofimov/matchmaker",
+        "issues": "https://github.com/ptrofimov/matchmaker/issues"
+    },
     "require": {
         "php": ">=5.4"
     },

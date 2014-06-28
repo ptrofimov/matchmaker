@@ -17,7 +17,7 @@ require_once('rules.php');
 function matcher($value, $pattern)
 {
     $args = [];
-    if (($p = ltrim($pattern, ':')) != $pattern) foreach (array_filter(explode(' ', $p)) as $name) {
+    if (($p = ltrim($pattern, ':')) != $pattern) foreach (explode(' ', $p) as $name) {
         if (substr($name, -1) == ')') {
             list($name, $args) = explode('(', $name);
             $args = explode(',', rtrim($args, ')'));

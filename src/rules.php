@@ -215,6 +215,7 @@ function rules($key = null)
     if (is_array($key)) {
         $rules = array_merge($rules, $key);
     } elseif (!is_null($key)) {
+        if (is_string($key) && !trim($key)) $key = 'any';
         if (!isset($rules[$key])) {
             throw new \InvalidArgumentException("Matcher $key not found");
         }
