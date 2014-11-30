@@ -17,21 +17,23 @@ require_once('rules.php');
 function matcher($value, $pattern)
 {
     $args = [];
-    if (($p = ltrim($pattern, ':')) != $pattern) foreach (explode(' ', $p) as $name) {
-        if (substr($name, -1) == ')') {
-            list($name, $args) = explode('(', $name);
-            $args = explode(',', rtrim($args, ')'));
-        }
-        if (is_callable(rules($name))) {
-            if (!call_user_func_array(rules($name), array_merge([$value], $args))) {
+    if (($p = ltrim($pattern, ':')) != $pattern) {
+        foreach (explode(' ', $p) as $name) {
+            $args = [$value];
+            if (preg_match('/^(\w+)\((.+)\)$/', $name, $matches)) {
+                $name = $matches[1];
+                $args = [$value, $matches[2]];
+            }
+            if (is_callable(rules($name))) {
+                if (!call_user_func_array(rules($name), $args)) {
+                    return false;
+                }
+            } elseif (rules($name) !== $value) {
                 return false;
             }
-        } elseif (rules($name) !== $value) {
-            return false;
         }
+        return true;
     } else {
         return $pattern === '' || $value === $pattern;
     }
-
-    return true;
 }

@@ -36,8 +36,8 @@ function rules($key = null)
                     return !empty($value);
                 },
             'in' =>
-                function ($value) {
-                    return in_array($value, array_slice(func_get_args(), 1));
+                function ($value, $vals) {
+                    return in_array($value, explode(",", $vals));
                 },
             'mixed' =>
                 function () {
@@ -98,7 +98,8 @@ function rules($key = null)
                     return $value > 0;
                 },
             'between' =>
-                function ($value, $a, $b) {
+                function ($value, $pair) {
+                    list($a, $b) = explode(",", $pair);
                     return $value >= $a && $value <= $b;
                 },
 
@@ -196,14 +197,16 @@ function rules($key = null)
                     return is_object($value) && $value instanceof $class;
                 },
             'property' =>
-                function ($value, $property, $expected) {
+                function ($value, $pair) {
+                    list($property, $expected) = explode(",", $pair);
                     return
                         is_object($value)
                         && (property_exists($value, $property) || property_exists($value, '__get'))
                         && $value->$property == $expected;
                 },
             'method' =>
-                function ($value, $method, $expected) {
+                function ($value, $pair) {
+                    list($method, $expected) = explode(",", $pair);
                     return
                         is_object($value)
                         && (method_exists($value, $method) || method_exists($value, '__call'))
