@@ -20,7 +20,8 @@ function matcher($value, $pattern)
     if (($p = ltrim($pattern, ':')) != $pattern) foreach (explode(' ', $p) as $name) {
         if (substr($name, -1) == ')') {
             list($name, $args) = explode('(', $name);
-            $args = explode(',', rtrim($args, ')'));
+            $args = [rtrim($args, ')')];
+            if ($name!='regexp') $args = explode(',', $args[0]);
         }
         if (is_callable(rules($name))) {
             if (!call_user_func_array(rules($name), array_merge([$value], $args))) {
